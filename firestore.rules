@@ -1,0 +1,18 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Hub: operators y registry solo vía Admin SDK / Functions.
+    match /hubAdmins/{uid} {
+      allow read, write: if false;
+    }
+    match /productRegistry/{id} {
+      allow read, write: if false;
+    }
+    match /hubAuditLogs/{id} {
+      allow read, write: if false;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
