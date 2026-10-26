@@ -35,11 +35,17 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Secrets
+# Secrets / firma
 serviceAccount*.json
 *.local
 .env
 .env.*
+*.jks
+*.keystore
+android/key.properties
+
+# Cursor / agente local
+.cursor/
 
 # Node
 functions/node_modules/

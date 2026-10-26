@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import '../core/api_errors.dart';
 
 /// Sesión del hub: exige custom claim `hubAdmin`.
 class HubSession extends ChangeNotifier {
@@ -35,7 +36,7 @@ class HubSession extends ChangeNotifier {
             'Esta cuenta no tiene rol hubAdmin. Usa bootstrap o pide acceso.';
       }
     } catch (e) {
-      _error = e.toString();
+      _error = hubFriendlyError(e);
     }
     _loading = false;
     notifyListeners();
@@ -51,11 +52,11 @@ class HubSession extends ChangeNotifier {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      _error = e.message ?? e.code;
+      _error = hubFriendlyError(e);
       _loading = false;
       notifyListeners();
     } catch (e) {
-      _error = e.toString();
+      _error = hubFriendlyError(e);
       _loading = false;
       notifyListeners();
     }

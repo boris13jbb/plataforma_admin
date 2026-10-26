@@ -1,8 +1,12 @@
 import 'package:cloud_functions/cloud_functions.dart';
+import '../core/api_errors.dart';
 import '../products/product_models.dart';
 import '../products/product_registry.dart';
 
-/// Cliente de callables del hub (proyecto plataforma-admin-jb).
+/// Cliente de callables del hub (proyecto plataforma-admin-jb, región us-central1).
+///
+/// Las Functions ya están en la nube (HTTPS). La app móvil/web no depende de
+/// un backend local: usa siempre el endpoint remoto de Firebase.
 class HubApiClient {
   HubApiClient({FirebaseFunctions? functions})
       : _fn = functions ??
@@ -30,9 +34,13 @@ class HubApiClient {
       return list
           .map((e) => HubProduct.fromMap(Map<String, dynamic>.from(e as Map)))
           .toList();
-    } catch (_) {
-      // Fallback offline / pre-deploy: registry local.
-      return ProductRegistry.builtIn;
+    } catch (e) {
+      // Solo degradar a registry local ante fallos transitorios de red.
+      // Authz y errores de backend deben propagarse al dashboard.
+      if (isHubTransientConnectivityError(e)) {
+        return ProductRegistry.builtIn;
+      }
+      rethrow;
     }
   }
 

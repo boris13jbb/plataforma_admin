@@ -1,0 +1,6 @@
+# Copia a android/key.properties (NO subir al git) y rellena valores reales.
+# Ver ANDROID_RELEASE.md
+storePassword=REPLACE_ME
+keyPassword=REPLACE_ME
+keyAlias=plataforma_admin_release
+storeFile=D:/secure/plataforma-admin-release.jks

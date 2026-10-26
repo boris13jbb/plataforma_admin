@@ -2,6 +2,7 @@ import * as admin from "firebase-admin";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import {defineSecret} from "firebase-functions/params";
 import {assertHubAdmin, writeHubAudit, hubAuth, hubDb, nowIso} from "./hubAuth";
+import {assertBootstrapRequest} from "./bootstrapGate";
 import {getProductApp} from "./productApps";
 import {getProduct, listProductsPublic} from "./products";
 import * as coti from "./connectors/cotiapp";
@@ -12,6 +13,9 @@ const saCotiapp = defineSecret("SA_COTIAPP_JSON");
 const saCvmaker = defineSecret("SA_CVMAKER_JSON");
 
 const productSecrets = [saCotiapp, saCvmaker];
+
+/** Gen2 callables: invoker público (Auth se valida en la función). Evita CORS falso por 403 en preflight. */
+const callOpts = {invoker: "public" as const, cors: true};
 
 function saJsonFor(productId: string): string {
   if (productId === "cotiapp") return saCotiapp.value();
@@ -31,27 +35,18 @@ function productApp(productId: string): admin.app.App {
  * Primer hubAdmin: solo si aún no hay ninguno y el secreto coincide.
  */
 export const bootstrapHubAdmin = onCall(
-  {secrets: [bootstrapSecret]},
+  {...callOpts, secrets: [bootstrapSecret]},
   async (request) => {
-    if (!request.auth?.uid) {
-      throw new HttpsError("unauthenticated", "Debes iniciar sesión.");
-    }
     const secret = String(request.data?.secret ?? "");
-    const expected = bootstrapSecret.value();
-    if (!expected || secret !== expected) {
-      throw new HttpsError("permission-denied", "Secreto de bootstrap inválido.");
-    }
-
     const existing = await hubDb().collection("hubAdmins").limit(1).get();
-    if (!existing.empty) {
-      throw new HttpsError(
-        "failed-precondition",
-        "Ya existe al menos un hubAdmin.",
-      );
-    }
+    const {uid} = assertBootstrapRequest({
+      uid: request.auth?.uid,
+      providedSecret: secret,
+      expectedSecret: bootstrapSecret.value(),
+      adminExists: !existing.empty,
+    });
 
-    const uid = request.auth.uid;
-    const email = (request.auth.token.email as string | undefined) ?? null;
+    const email = (request.auth?.token.email as string | undefined) ?? null;
     await hubAuth().setCustomUserClaims(uid, {hubAdmin: true});
     await hubDb().collection("hubAdmins").doc(uid).set({
       uid,
@@ -73,13 +68,13 @@ export const bootstrapHubAdmin = onCall(
   },
 );
 
-export const hubListProducts = onCall(async (request) => {
+export const hubListProducts = onCall(callOpts, async (request) => {
   assertHubAdmin(request.auth);
   return {products: listProductsPublic()};
 });
 
 export const hubProductMetrics = onCall(
-  {secrets: productSecrets},
+  {...callOpts, secrets: productSecrets},
   async (request) => {
     const actor = assertHubAdmin(request.auth);
     const productId = String(request.data?.productId ?? "").trim();
@@ -101,7 +96,7 @@ export const hubProductMetrics = onCall(
 );
 
 export const hubLookupUser = onCall(
-  {secrets: productSecrets},
+  {...callOpts, secrets: productSecrets},
   async (request) => {
     assertHubAdmin(request.auth);
     const productId = String(request.data?.productId ?? "").trim();
@@ -120,7 +115,7 @@ export const hubLookupUser = onCall(
 );
 
 export const hubGrant = onCall(
-  {secrets: productSecrets},
+  {...callOpts, secrets: productSecrets},
   async (request) => {
     const actor = assertHubAdmin(request.auth);
     const productId = String(request.data?.productId ?? "").trim();
@@ -163,7 +158,7 @@ export const hubGrant = onCall(
 );
 
 export const hubRevoke = onCall(
-  {secrets: productSecrets},
+  {...callOpts, secrets: productSecrets},
   async (request) => {
     const actor = assertHubAdmin(request.auth);
     const productId = String(request.data?.productId ?? "").trim();
@@ -193,7 +188,7 @@ export const hubRevoke = onCall(
 );
 
 export const hubListGrants = onCall(
-  {secrets: productSecrets},
+  {...callOpts, secrets: productSecrets},
   async (request) => {
     assertHubAdmin(request.auth);
     const productId = String(request.data?.productId ?? "").trim();

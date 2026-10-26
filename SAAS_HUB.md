@@ -2,7 +2,22 @@
 
 Proyecto Firebase del hub: **`plataforma-admin-jb`**.
 
+## Estado (2026-08-15)
+
+| Paso | Estado |
+|------|--------|
+| Proyecto Firebase + Blaze | OK |
+| Auth Email/Password | OK (config en firebase.json) |
+| Firestore `(default)` nam5 | OK |
+| `firebase_options.dart` | Configurado |
+| Functions callables | Desplegadas (us-central1) |
+| Secrets SA + bootstrap | Debes verificarlos (sección 3) |
+| Primer hubAdmin | Activar desde la UI si aún no existe |
+
 ## 1. Crear el proyecto hub
+
+Ya creado: [plataforma-admin-jb](https://console.firebase.google.com/project/plataforma-admin-jb).
+Si recreas el entorno desde cero:
 
 1. [Firebase Console](https://console.firebase.google.com/) → Add project → `plataforma-admin-jb`.
 2. Activar **Blaze** (requerido para Functions + secrets).
@@ -15,10 +30,22 @@ Proyecto Firebase del hub: **`plataforma-admin-jb`**.
 ```powershell
 cd D:\plataforma_admin
 dart pub global activate flutterfire_cli
-flutterfire configure --project=plataforma-admin-jb --platforms=web --yes --out=lib/firebase_options.dart
+$env:Path = "$env:LOCALAPPDATA\Pub\Cache\bin;$env:Path"
+flutterfire configure --project=plataforma-admin-jb --platforms=android,ios,web --yes --out=lib/firebase_options.dart
 ```
 
-Eso reemplaza el placeholder en `lib/firebase_options.dart`.
+Eso regenera `lib/firebase_options.dart` y los archivos nativos
+(`android/app/google-services.json`, `ios/Runner/GoogleService-Info.plist`).
+
+Apps registradas en el proyecto hub:
+
+| Plataforma | Package / Bundle |
+|------------|------------------|
+| Web | (app Web existente) |
+| Android | `com.plataformaadmin.plataforma_admin` |
+| iOS | `com.plataformaadmin.plataformaAdmin` |
+
+Detalle móvil: [MOBILE_SETUP.md](MOBILE_SETUP.md). Despliegue: [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## 3. Service accounts de cada producto
 

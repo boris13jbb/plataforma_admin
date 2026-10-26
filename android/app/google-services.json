@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "23946566134",
+    "project_id": "plataforma-admin-jb",
+    "storage_bucket": "plataforma-admin-jb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:23946566134:android:37d4e4872428d9c24c0fd7",
+        "android_client_info": {
+          "package_name": "com.plataformaadmin.plataforma_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "23946566134-7gskoddopf2ohgs3gqa13kuafalb31id.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.plataformaadmin.plataforma_admin",
+            "certificate_hash": "1a8068c020c106bbb58a6582e0400e3a5a9a39e3"
+          }
+        },
+        {
+          "client_id": "23946566134-fotqgeclolsu5ptl12eb5p1lda53u255.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.plataformaadmin.plataforma_admin",
+            "certificate_hash": "faba453fe3718a26104b3ba77f967e104d6cb251"
+          }
+        },
+        {
+          "client_id": "23946566134-g6t24pp7ua871e3ejcd1al1cqv7vr6i9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4nVSSKD0OMYMAvYwf0WknKST-eOH42KA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "23946566134-g6t24pp7ua871e3ejcd1al1cqv7vr6i9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "23946566134-1o335dhaiqnqdno8bulpglff38qgvoh5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.plataformaadmin.plataformaAdmin"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
